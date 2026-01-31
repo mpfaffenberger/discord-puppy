@@ -5,7 +5,6 @@ Modules:
 - chaos.py: Random dog facts, excuses, snack ratings, etc.
 """
 
-from discord_puppy.tools.web_search import web_search
 from discord_puppy.tools.chaos import (
     CHAOS_TOOLS,
     generate_excuse,
@@ -13,6 +12,7 @@ from discord_puppy.tools.chaos import (
     rate_snack,
     should_i_help,
 )
+from discord_puppy.tools.web_search import web_search
 
 __all__ = [
     "web_search",

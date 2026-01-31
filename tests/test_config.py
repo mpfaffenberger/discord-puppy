@@ -133,23 +133,23 @@ class TestGetSettings:
     def test_get_settings_from_env(self):
         """get_settings should load from environment variables."""
         env_vars = {
-            'DISCORD_TOKEN': 'env-token',
-            'ANTHROPIC_API_KEY': 'env-key',
-            'CHAOS_LEVEL': '0.8',
-            'RESPONSE_CHANCE': '0.3',
+            "DISCORD_TOKEN": "env-token",
+            "ANTHROPIC_API_KEY": "env-key",
+            "CHAOS_LEVEL": "0.8",
+            "RESPONSE_CHANCE": "0.3",
         }
         with patch.dict(os.environ, env_vars, clear=False):
             settings = get_settings()
-            assert settings.DISCORD_TOKEN == 'env-token'
-            assert settings.ANTHROPIC_API_KEY == 'env-key'
+            assert settings.DISCORD_TOKEN == "env-token"
+            assert settings.ANTHROPIC_API_KEY == "env-key"
             assert settings.CHAOS_LEVEL == 0.8
             assert settings.RESPONSE_CHANCE == 0.3
 
     def test_get_settings_cached(self):
         """get_settings should return cached instance."""
         env_vars = {
-            'DISCORD_TOKEN': 'token1',
-            'ANTHROPIC_API_KEY': 'key1',
+            "DISCORD_TOKEN": "token1",
+            "ANTHROPIC_API_KEY": "key1",
         }
         with patch.dict(os.environ, env_vars, clear=False):
             settings1 = get_settings()
@@ -159,20 +159,20 @@ class TestGetSettings:
     def test_clear_settings_cache(self):
         """clear_settings_cache should allow reloading settings."""
         env_vars1 = {
-            'DISCORD_TOKEN': 'token1',
-            'ANTHROPIC_API_KEY': 'key1',
+            "DISCORD_TOKEN": "token1",
+            "ANTHROPIC_API_KEY": "key1",
         }
         with patch.dict(os.environ, env_vars1, clear=False):
             settings1 = get_settings()
-        
+
         clear_settings_cache()
-        
+
         env_vars2 = {
-            'DISCORD_TOKEN': 'token2',
-            'ANTHROPIC_API_KEY': 'key2',
+            "DISCORD_TOKEN": "token2",
+            "ANTHROPIC_API_KEY": "key2",
         }
         with patch.dict(os.environ, env_vars2, clear=False):
             settings2 = get_settings()
-        
-        assert settings1.DISCORD_TOKEN == 'token1'
-        assert settings2.DISCORD_TOKEN == 'token2'
+
+        assert settings1.DISCORD_TOKEN == "token1"
+        assert settings2.DISCORD_TOKEN == "token2"

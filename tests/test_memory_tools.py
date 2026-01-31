@@ -4,7 +4,6 @@ Tests the LLM-callable memory tools that let the puppy remember
 and learn about users, plus the diary functionality.
 """
 
-import tempfile
 from pathlib import Path
 
 import pytest

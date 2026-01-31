@@ -9,11 +9,10 @@ Uses pydantic-ai's ToolReturn pattern with BinaryContent
 so the LLM can actually SEE the images, not just read about them.
 """
 
-from pydantic_ai.messages import BinaryContent, ToolReturn
+from pydantic_ai.messages import ToolReturn
 
 from .image_analyzer import (
     create_binary_content,
-    download_discord_attachment,
     process_discord_image,
     resize_for_analysis,
 )

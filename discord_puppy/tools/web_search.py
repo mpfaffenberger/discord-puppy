@@ -114,13 +114,21 @@ def _format_results(query: str, data: dict[str, Any]) -> str:
                 break
             # Topics can be direct or grouped
             if "Text" in topic:
-                results.append(f"  • {topic['Text'][:200]}..." if len(topic.get("Text", "")) > 200 else f"  • {topic['Text']}")
+                results.append(
+                    f"  • {topic['Text'][:200]}..."
+                    if len(topic.get("Text", "")) > 200
+                    else f"  • {topic['Text']}"
+                )
                 count += 1
             elif "Topics" in topic:
                 # Grouped topics - grab first one
                 for subtopic in topic["Topics"][:1]:
                     if "Text" in subtopic:
-                        results.append(f"  • {subtopic['Text'][:200]}..." if len(subtopic.get("Text", "")) > 200 else f"  • {subtopic['Text']}")
+                        results.append(
+                            f"  • {subtopic['Text'][:200]}..."
+                            if len(subtopic.get("Text", "")) > 200
+                            else f"  • {subtopic['Text']}"
+                        )
                         count += 1
         results.append("")
 
