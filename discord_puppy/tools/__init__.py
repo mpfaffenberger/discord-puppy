@@ -5,15 +5,27 @@ Custom tools for the Discord Puppy agent.
 """
 
 from discord_puppy.tools.discord_send import (
-    discord_send_message,
+    register_discord_send_message,
     set_current_channel,
     get_current_channel,
-    sanitize_mentions,
+)
+from discord_puppy.tools.memory_tools import (
+    register_search_messages,
+    register_get_user_notes,
+    register_record_user_note,
+    register_list_users,
+    register_get_recent_messages,
+    get_recent_messages_standalone,
 )
 
 __all__ = [
-    "discord_send_message",
+    "register_discord_send_message",
     "set_current_channel",
     "get_current_channel",
-    "sanitize_mentions",
+    "register_search_messages",
+    "register_get_user_notes",
+    "register_record_user_note",
+    "register_list_users",
+    "register_get_recent_messages",
+    "get_recent_messages_standalone",
 ]

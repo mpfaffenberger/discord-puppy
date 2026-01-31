@@ -7,36 +7,11 @@ Allows the puppy to send messages to the current Discord channel.
 import asyncio
 from typing import Optional, Any
 import discord
+from pydantic_ai import RunContext
 
 # Global channel context
 _current_channel: Optional[discord.abc.Messageable] = None
 _event_loop: Optional[asyncio.AbstractEventLoop] = None
-
-
-def sanitize_mentions(text: str) -> str:
-    """Sanitize dangerous mentions to prevent spam.
-    
-    Replaces @here and @everyone with safe versions that won't ping.
-    This is a safety net - the agent is instructed not to use these,
-    but we sanitize anyway because defense in depth is good.
-    
-    Args:
-        text: The message text to sanitize
-        
-    Returns:
-        Sanitized text with dangerous mentions neutered
-    """
-    if not text:
-        return text
-    # Replace dangerous mentions with neutered versions
-    text = text.replace("@here", "@.here")
-    text = text.replace("@everyone", "@.everyone")
-    # Also catch variations with different casing
-    text = text.replace("@HERE", "@.HERE")
-    text = text.replace("@EVERYONE", "@.EVERYONE")
-    text = text.replace("@Here", "@.Here")
-    text = text.replace("@Everyone", "@.Everyone")
-    return text
 
 
 def set_current_channel(channel: discord.abc.Messageable, loop: asyncio.AbstractEventLoop = None) -> None:
@@ -51,44 +26,45 @@ def get_current_channel() -> Optional[discord.abc.Messageable]:
     return _current_channel
 
 
-def discord_send_message(agent, message: str = "") -> dict[str, Any]:
-    """Send a message to the current Discord channel.
+def register_discord_send_message(agent):
+    """Register the discord_send_message tool."""
     
-    Use this to update the chat about what you're doing between tool calls.
-    Keep updates SHORT - just a few words about current status.
-    
-    Args:
-        agent: The agent context (injected by code_puppy)
-        message: The message to send (keep it brief!)
+    @agent.tool
+    def discord_send_message(context: RunContext, message: str = "") -> dict[str, Any]:
+        """Send a message to the current Discord channel.
         
-    Returns:
-        Success status and any error message.
-    """
-    global _current_channel, _event_loop
-    
-    if not _current_channel:
-        return {"success": False, "error": "No channel set"}
-    
-    if not message or not str(message).strip():
-        return {"success": False, "error": "Empty message"}
-    
-    message = str(message).strip()
-    
-    # Sanitize dangerous mentions (defense in depth)
-    message = sanitize_mentions(message)
-    
-    # Truncate if too long
-    if len(message) > 200:
-        message = message[:197] + "..."
-    
-    try:
-        # Schedule the coroutine on the event loop
-        future = asyncio.run_coroutine_threadsafe(
-            _current_channel.send(message),
-            _event_loop
-        )
-        # Wait for it to complete (with timeout)
-        future.result(timeout=5.0)
-        return {"success": True, "message": message}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+        Use this to update the chat about what you're doing between tool calls.
+        Keep updates SHORT - just a few words about current status.
+        
+        Args:
+            context: The pydantic-ai runtime context.
+            message: The message to send (keep it brief!)
+            
+        Returns:
+            Success status and any error message.
+        """
+        global _current_channel, _event_loop
+        
+        if not _current_channel:
+            return {"success": False, "error": "No channel set"}
+        
+        if not message or not str(message).strip():
+            return {"success": False, "error": "Empty message"}
+        
+        message = str(message).strip()
+        
+        # Truncate if too long
+        if len(message) > 200:
+            message = message[:197] + "..."
+        
+        try:
+            # Schedule the coroutine on the event loop
+            future = asyncio.run_coroutine_threadsafe(
+                _current_channel.send(message),
+                _event_loop
+            )
+            # Wait for it to complete (with timeout)
+            future.result(timeout=5.0)
+            return {"success": True, "message": message}
+        except Exception as e:
+            return {"success": False, "error": str(e)}

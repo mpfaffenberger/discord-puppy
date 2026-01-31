@@ -8,6 +8,6 @@ Modules:
   - Spontaneous message generation
 """
 
-from discord_puppy.agents.puppy_agent import DiscordPuppyAgent, get_puppy_agent
+from discord_puppy.agents.puppy_agent import DiscordPuppyAgent, get_puppy_agent, create_puppy_agent
 
-__all__ = ["DiscordPuppyAgent", "get_puppy_agent"]
+__all__ = ["DiscordPuppyAgent", "get_puppy_agent", "create_puppy_agent"]

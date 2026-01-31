@@ -21,7 +21,7 @@ from dotenv import load_dotenv
 from discord_puppy.memory.database import init_database, get_connection, ensure_user_exists
 from discord_puppy.memory.message_indexer import index_all_guilds, index_message, compute_message_hash
 from discord_puppy.heartbeat import HeartbeatEngine, HeartbeatConfig, PendingMessage
-from discord_puppy.agents.puppy_agent import get_puppy_agent
+from discord_puppy.agents.puppy_agent import create_puppy_agent
 from discord_puppy.tools.discord_send import set_current_channel
 
 # Load .env file if present
@@ -39,21 +39,54 @@ client = discord.Client(intents=intents)
 heartbeat: Optional[HeartbeatEngine] = None
 
 
+async def build_channel_context(channel: discord.abc.Messageable, limit: int = 10) -> str:
+    """Build context string with channel info and recent messages."""
+    lines = []
+    
+    # Channel info
+    channel_name = getattr(channel, 'name', 'DM')
+    channel_id = getattr(channel, 'id', 'unknown')
+    lines.append(f"[Channel: #{channel_name} (ID: {channel_id})]")
+    lines.append("")
+    lines.append("Recent messages:")
+    
+    # Fetch last N messages from Discord
+    try:
+        messages = []
+        async for msg in channel.history(limit=limit):
+            messages.append(msg)
+        
+        # Reverse to get chronological order
+        for msg in reversed(messages):
+            author = msg.author.display_name
+            content = msg.content[:200] + "..." if len(msg.content) > 200 else msg.content
+            lines.append(f"{author}: {content}")
+    except Exception as e:
+        lines.append(f"(couldn't fetch history: {e})")
+    
+    return "\n".join(lines)
+
+
 async def handle_should_respond(pending_messages: list[PendingMessage]) -> None:
     """Callback when the heartbeat decides we should respond."""
     if not pending_messages:
         return
     
-    # Get the puppy agent
-    agent = get_puppy_agent()
+    # Create a fresh agent for this task (allows concurrent responses!)
+    agent = create_puppy_agent()
     
     # Set current channel so discord_send_message tool works
     channel = pending_messages[-1].message.channel
     set_current_channel(channel, asyncio.get_event_loop())
     
-    # Build prompt from messages - agent history handles context
+    # Build context with channel info and recent messages
+    context = await build_channel_context(channel, limit=10)
+    
+    # Build prompt from pending messages
     prompt_parts = [f"{pm.message.author.display_name}: {pm.message.content}" for pm in pending_messages]
-    prompt = "\n".join(prompt_parts)
+    new_messages = "\n".join(prompt_parts)
+    
+    prompt = f"{context}\n\n---\nRespond to:\n{new_messages}"
     
     # Generate response via run_with_mcp
     result = await agent.run_with_mcp(prompt)
@@ -82,12 +115,18 @@ async def handle_spontaneous() -> None:
     
     channel = heartbeat.last_active_channel
     
+    # Create a fresh agent for this task (allows concurrent responses!)
+    agent = create_puppy_agent()
+    
     # Set current channel so discord_send_message tool works
     set_current_channel(channel, asyncio.get_event_loop())
     
-    # Generate spontaneous message via run_with_mcp
-    agent = get_puppy_agent()
-    result = await agent.run_with_mcp("*wakes up* say something random and chill")
+    # Build context with channel info and recent messages
+    context = await build_channel_context(channel, limit=10)
+    
+    # Generate spontaneous message based on chat history
+    prompt = f"{context}\n\n---\n*wakes up* say something relevant to the recent chat, or a chill random thought. ONE line max."
+    result = await agent.run_with_mcp(prompt)
     message = result.output if result else "*yawns* 🐕"
     
     try:

@@ -6,9 +6,16 @@ system that decides whether to bark based on:
 
 - 5-second heartbeat interval
 - 4% spontaneous message chance (if no one's talking)
-- 20% response chance (if there are new messages)
+- 20% base response chance (if there are new messages)
 - 100% response chance (if directly mentioned)
 
+Engagement System 📈:
+- When a response roll fails, boost chance by +15% for next message
+- Boost decays by -15% every 30 seconds of inactivity
+- Max boost capped at +60% (so 80% total response chance)
+- Boost resets to 0% when we actually respond
+
+This makes the puppy more likely to respond the longer it stays quiet!
 Pure chaos, but controlled chaos. Like a puppy on a leash.
 """
 
@@ -37,6 +44,12 @@ class HeartbeatConfig:
     spontaneous_chance: float = 0.04  # 4% when no messages
     response_chance: float = 0.20     # 20% when there are messages
     mention_chance: float = 1.0       # 100% when directly mentioned
+    
+    # Engagement system - builds up when we stay quiet, decays over time
+    engagement_boost_amount: float = 0.15   # +15% per failed roll
+    engagement_decay_amount: float = 0.15   # -15% per decay tick
+    engagement_decay_seconds: float = 30.0  # Decay every 30 seconds
+    engagement_max_boost: float = 0.60      # Cap at +60% (so max 80% total)
 
 
 class HeartbeatEngine:
@@ -80,6 +93,10 @@ class HeartbeatEngine:
         
         # Track the last channel we saw activity in (for spontaneous messages)
         self._last_active_channel: Optional[discord.TextChannel] = None
+        
+        # Engagement system - builds up when ignored, decays over time
+        self._engagement_boost: float = 0.0
+        self._last_decay_time: datetime = datetime.utcnow()
 
     def queue_message(self, message: discord.Message, is_mention: bool = False) -> None:
         """Add a message to the pending queue.
@@ -126,9 +143,49 @@ class HeartbeatEngine:
                 # Don't crash the loop on errors
                 continue
 
+    def _apply_engagement_decay(self) -> None:
+        """Decay the engagement boost over time."""
+        now = datetime.utcnow()
+        elapsed = (now - self._last_decay_time).total_seconds()
+        
+        # How many decay ticks have passed?
+        decay_ticks = int(elapsed / self.config.engagement_decay_seconds)
+        
+        if decay_ticks > 0 and self._engagement_boost > 0:
+            old_boost = self._engagement_boost
+            decay_amount = decay_ticks * self.config.engagement_decay_amount
+            self._engagement_boost = max(0.0, self._engagement_boost - decay_amount)
+            self._last_decay_time = now
+            
+            if old_boost != self._engagement_boost:
+                print(f"📉 Engagement decayed: {old_boost:.0%} → {self._engagement_boost:.0%}")
+
+    def _boost_engagement(self) -> None:
+        """Increase engagement boost after a failed roll."""
+        old_boost = self._engagement_boost
+        self._engagement_boost = min(
+            self.config.engagement_max_boost,
+            self._engagement_boost + self.config.engagement_boost_amount
+        )
+        print(f"📈 Engagement boosted: {old_boost:.0%} → {self._engagement_boost:.0%}")
+
+    def _reset_engagement(self) -> None:
+        """Reset engagement boost after responding."""
+        if self._engagement_boost > 0:
+            print(f"🔄 Engagement reset: {self._engagement_boost:.0%} → 0%")
+            self._engagement_boost = 0.0
+
+    @property
+    def effective_response_chance(self) -> float:
+        """Get the current response chance including engagement boost."""
+        return min(1.0, self.config.response_chance + self._engagement_boost)
+
     async def _process_heartbeat(self) -> None:
         """Process a single heartbeat - decide whether to speak!"""
         self._last_heartbeat = datetime.utcnow()
+        
+        # Apply engagement decay first
+        self._apply_engagement_decay()
         
         # Grab all pending messages and clear the queue
         pending = list(self._pending_messages)
@@ -150,19 +207,25 @@ class HeartbeatEngine:
                 response_messages = mentions  # Respond to all mentions
                 print(f"💬 Mention detected! (roll={roll:.2f}, threshold={self.config.mention_chance})")
         
-        # Rule 2: Non-mention messages = 20% response
+        # Rule 2: Non-mention messages = base chance + engagement boost
         if non_mentions and not should_respond:
             roll = random.random()
-            if roll < self.config.response_chance:
+            effective_chance = self.effective_response_chance
+            
+            if roll < effective_chance:
                 should_respond = True
                 # Pick a random subset of messages to respond to (max 3)
                 response_messages = random.sample(
                     non_mentions, 
                     min(len(non_mentions), 3)
                 )
-                print(f"🎲 Response roll succeeded! (roll={roll:.2f}, threshold={self.config.response_chance})")
+                print(f"🎲 Response roll succeeded! (roll={roll:.2f}, threshold={effective_chance:.0%} [base={self.config.response_chance:.0%} + boost={self._engagement_boost:.0%}])")
+                # Reset engagement on successful response
+                self._reset_engagement()
             else:
-                print(f"🎲 Response roll failed. (roll={roll:.2f}, threshold={self.config.response_chance})")
+                print(f"🎲 Response roll failed. (roll={roll:.2f}, threshold={effective_chance:.0%} [base={self.config.response_chance:.0%} + boost={self._engagement_boost:.0%}])")
+                # Boost engagement for next time!
+                self._boost_engagement()
         
         # Rule 3: No messages = 4% spontaneous chance
         if not pending:
@@ -170,12 +233,14 @@ class HeartbeatEngine:
             if roll < self.config.spontaneous_chance:
                 print(f"✨ Spontaneous message! (roll={roll:.2f}, threshold={self.config.spontaneous_chance})")
                 if self.on_spontaneous:
-                    await self.on_spontaneous()
+                    # Fire-and-forget so multiple can be in-flight!
+                    asyncio.create_task(self.on_spontaneous())
                 return
         
         # Execute the response if we should
         if should_respond and response_messages and self.on_should_respond:
-            await self.on_should_respond(response_messages)
+            # Fire-and-forget so multiple responses can be in-flight!
+            asyncio.create_task(self.on_should_respond(response_messages))
 
     @property
     def last_active_channel(self) -> Optional[discord.TextChannel]:
