@@ -1,7 +1,9 @@
 """
-Tools subsystem - Utilities for chaos and helpfulness! 🔧
+Discord Puppy Tools 🐕
 
-Modules:
-- web_search.py: DuckDuckGo search (with 10% chaos chance)
-- chaos.py: Random dog facts, excuses, snack ratings, etc.
+Custom tools for the Discord Puppy agent.
 """
+
+from discord_puppy.tools.discord_send import discord_send_message, set_current_channel, get_current_channel
+
+__all__ = ["discord_send_message", "set_current_channel", "get_current_channel"]

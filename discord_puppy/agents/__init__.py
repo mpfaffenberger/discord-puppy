@@ -2,9 +2,12 @@
 Agents subsystem - The brain behind the chaos! 🤖
 
 Modules:
-- discord_puppy_agent.py: Main agent with Universal Constructor
-  - Can create its own tools!
-  - Has memory access
-  - Has vision capabilities
-  - Maximum chaos energy
+- puppy_agent.py: Main agent that generates responses
+  - Chaotic personality
+  - Fallback responses when AI not available
+  - Spontaneous message generation
 """
+
+from discord_puppy.agents.puppy_agent import DiscordPuppyAgent, get_puppy_agent
+
+__all__ = ["DiscordPuppyAgent", "get_puppy_agent"]

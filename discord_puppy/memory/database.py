@@ -107,6 +107,35 @@ async def init_database(db_path: Optional[Path] = None) -> None:
             ON puppy_diary(timestamp DESC)
         """)
 
+        # Indexed messages table - tracks what messages we've already processed
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS indexed_messages (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                message_hash TEXT UNIQUE NOT NULL,
+                message_id TEXT NOT NULL,
+                channel_id TEXT NOT NULL,
+                guild_id TEXT,
+                user_id TEXT NOT NULL,
+                content_preview TEXT,
+                message_timestamp TIMESTAMP,
+                indexed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES user_notes(user_id)
+                    ON DELETE CASCADE
+            )
+        """)
+
+        # Index for fast hash lookups (the whole point of deduplication!)
+        await conn.execute("""
+            CREATE INDEX IF NOT EXISTS idx_message_hash
+            ON indexed_messages(message_hash)
+        """)
+
+        # Index for channel-based queries
+        await conn.execute("""
+            CREATE INDEX IF NOT EXISTS idx_message_channel
+            ON indexed_messages(channel_id, message_timestamp DESC)
+        """)
+
         await conn.commit()
         print("🧠 Discord Puppy brain initialized!")
 
