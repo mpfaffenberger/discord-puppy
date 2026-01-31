@@ -13,6 +13,32 @@ _current_channel: Optional[discord.abc.Messageable] = None
 _event_loop: Optional[asyncio.AbstractEventLoop] = None
 
 
+def sanitize_mentions(text: str) -> str:
+    """Sanitize dangerous mentions to prevent spam.
+    
+    Replaces @here and @everyone with safe versions that won't ping.
+    This is a safety net - the agent is instructed not to use these,
+    but we sanitize anyway because defense in depth is good.
+    
+    Args:
+        text: The message text to sanitize
+        
+    Returns:
+        Sanitized text with dangerous mentions neutered
+    """
+    if not text:
+        return text
+    # Replace dangerous mentions with neutered versions
+    text = text.replace("@here", "@.here")
+    text = text.replace("@everyone", "@.everyone")
+    # Also catch variations with different casing
+    text = text.replace("@HERE", "@.HERE")
+    text = text.replace("@EVERYONE", "@.EVERYONE")
+    text = text.replace("@Here", "@.Here")
+    text = text.replace("@Everyone", "@.Everyone")
+    return text
+
+
 def set_current_channel(channel: discord.abc.Messageable, loop: asyncio.AbstractEventLoop = None) -> None:
     """Set the current channel for sending messages."""
     global _current_channel, _event_loop
@@ -47,6 +73,9 @@ def discord_send_message(agent, message: str = "") -> dict[str, Any]:
         return {"success": False, "error": "Empty message"}
     
     message = str(message).strip()
+    
+    # Sanitize dangerous mentions (defense in depth)
+    message = sanitize_mentions(message)
     
     # Truncate if too long
     if len(message) > 200:
