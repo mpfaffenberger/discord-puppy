@@ -21,11 +21,13 @@ wheels/
 *.egg
 
 # Virtual environments
-.env
-.venv
-env/
+.venv/
 venv/
 ENV/
+
+# Environment variables
+.env
+.env.local
 
 # IDE
 .idea/
@@ -38,6 +40,6 @@ ENV/
 .coverage
 htmlcov/
 
-# OS
+# Misc
+*.log
 .DS_Store
-Thumbs.db
