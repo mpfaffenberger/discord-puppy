@@ -1,0 +1,66 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "discord-puppy"
+version = "0.1.0"
+description = "A chaotic, self-evolving Discord bot with memory, vision, and pure chaos energy 🐕💥"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+authors = [
+    { name = "The Pack", email = "puppy@example.com" }
+]
+keywords = ["discord", "bot", "ai", "chaos", "puppy"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Communications :: Chat",
+]
+
+dependencies = [
+    "code-puppy>=0.0.384",
+    "discord.py>=2.3.0",
+    "python-dotenv>=1.0.0",
+    "httpx>=0.24.1",
+    "Pillow>=10.0.0",
+    "aiosqlite>=0.19.0",
+    "pydantic>=2.0.0",
+    "pydantic-ai>=0.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+discord-puppy = "discord_puppy.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/example/discord-puppy"
+Documentation = "https://github.com/example/discord-puppy#readme"
+Repository = "https://github.com/example/discord-puppy"
+
+[tool.hatch.build.targets.wheel]
+packages = ["discord_puppy"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = ["E501"]
