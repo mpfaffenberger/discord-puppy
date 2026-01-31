@@ -19,11 +19,9 @@ from discord_puppy.memory.database import (
     serialize_json_field,
 )
 from discord_puppy.memory.user_notes import (
-    get_user_notes,
     get_user_summary,
     update_user_notes,
 )
-
 
 # =============================================================================
 # USER MEMORY TOOLS 🧠
@@ -61,14 +59,12 @@ async def recall_user(user_id: str, db_path: Optional[Path] = None) -> str:
     )
 
 
-async def update_memory(
-    user_id: str, observation: str, db_path: Optional[Path] = None
-) -> str:
+async def update_memory(user_id: str, observation: str, db_path: Optional[Path] = None) -> str:
     """Write a new observation about this human to my brain. I'll remember this forever! ...probably.
 
     Time to add something to my mental file on this human!
     *opens filing cabinet in brain, papers fly everywhere*
-    
+
     Good things to observe:
     - Treat giving behavior (VERY IMPORTANT)
     - Favorite topics (so I can talk about them!)
@@ -106,14 +102,12 @@ async def update_memory(
         )
 
 
-async def add_nickname(
-    user_id: str, nickname: str, db_path: Optional[Path] = None
-) -> str:
+async def add_nickname(user_id: str, nickname: str, db_path: Optional[Path] = None) -> str:
     """Give this human a nickname! They might not like it.
 
     Humans love nicknames! Especially the ones I come up with!
     *tail wags mischievously*
-    
+
     Previous hits include:
     - "Treat Dispenser #7"
     - "The One Who Pets Good"
@@ -155,7 +149,7 @@ async def add_nickname(
 
         await conn.execute(
             """
-            UPDATE user_notes 
+            UPDATE user_notes
             SET nicknames = ?, updated_at = CURRENT_TIMESTAMP
             WHERE user_id = ?
             """,
@@ -225,7 +219,7 @@ async def adjust_trust(
         # Update trust level
         await conn.execute(
             """
-            UPDATE user_notes 
+            UPDATE user_notes
             SET trust_level = ?, updated_at = CURRENT_TIMESTAMP
             WHERE user_id = ?
             """,
@@ -288,9 +282,7 @@ def _get_trust_description(trust_level: int) -> str:
 # =============================================================================
 
 
-async def write_diary(
-    thought: str, mood: str, db_path: Optional[Path] = None
-) -> str:
+async def write_diary(thought: str, mood: str, db_path: Optional[Path] = None) -> str:
     """Write in my personal diary. Very important puppy thoughts.
 
     Dear Diary,
@@ -349,9 +341,7 @@ async def write_diary(
         await conn.close()
 
 
-async def recall_diary(
-    days: int = 7, db_path: Optional[Path] = None
-) -> str:
+async def recall_diary(days: int = 7, db_path: Optional[Path] = None) -> str:
     """What have I been thinking about lately?
 
     *blows dust off diary* Let me see what past-me was up to!
@@ -399,9 +389,7 @@ async def recall_diary(
             mood = row["mood"] or "unknown"
             mood_emoji = _get_mood_emoji(mood)
 
-            entries.append(
-                f"**[{timestamp}]** ({mood} {mood_emoji})\n" f"{thought}"
-            )
+            entries.append(f"**[{timestamp}]** ({mood} {mood_emoji})\n{thought}")
 
         entries_text = "\n\n".join(entries)
 
