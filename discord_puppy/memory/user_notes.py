@@ -21,7 +21,6 @@ from discord_puppy.memory.database import (
     ensure_user_exists,
     get_connection,
     parse_json_field,
-    serialize_json_field,
 )
 
 
