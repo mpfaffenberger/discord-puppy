@@ -1,1 +1,1 @@
-"""Discord Puppy test suite 🐕 - woof!"""
+"""Tests for Discord Puppy - woof! 🐕"""

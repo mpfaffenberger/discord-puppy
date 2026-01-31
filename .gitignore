@@ -4,7 +4,6 @@ __pycache__/
 *$py.class
 *.so
 .Python
-<<<<<<< HEAD
 build/
 develop-eggs/
 dist/
@@ -20,27 +19,14 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-=======
-*.egg
-*.egg-info/
-dist/
-build/
-eggs/
-.eggs/
->>>>>>> feature/discord-puppy-vjo-config
 
 # Virtual environments
-.venv/
+.env
+.venv
+env/
 venv/
 ENV/
 
-<<<<<<< HEAD
-=======
-# Environment variables
-.env
-.env.local
-
->>>>>>> feature/discord-puppy-vjo-config
 # IDE
 .idea/
 .vscode/
@@ -52,14 +38,6 @@ ENV/
 .coverage
 htmlcov/
 
-<<<<<<< HEAD
-# Environment
-.env
-.env.local
-
-# macOS
-=======
-# Misc
-*.log
->>>>>>> feature/discord-puppy-vjo-config
+# OS
 .DS_Store
+Thumbs.db
