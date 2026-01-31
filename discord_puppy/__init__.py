@@ -13,4 +13,7 @@ CHAOS LEVEL: 🔥🔥🔥🔥🔥
 __version__ = "0.1.0"
 __author__ = "The Pack"
 
-# Core exports will be added as modules are implemented
+# Core exports
+from discord_puppy.config import Settings, get_settings, clear_settings_cache
+
+__all__ = ['Settings', 'get_settings', 'clear_settings_cache']
