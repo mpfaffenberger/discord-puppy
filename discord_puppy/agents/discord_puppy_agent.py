@@ -7,12 +7,11 @@ memory for remembering humans, and vision for seeing all the memes.
 
 from typing import TYPE_CHECKING
 
+from code_puppy.tools.universal_constructor import register_universal_constructor
 from pydantic_ai import Agent
 
-from code_puppy.tools.universal_constructor import register_universal_constructor
-
 if TYPE_CHECKING:
-    from pydantic_ai import RunContext
+    pass
 
 # =============================================================================
 # THE MOST EPIC SYSTEM PROMPT EVER WRITTEN (FOR A DOG)
@@ -23,8 +22,8 @@ DISCORD_PUPPY_SYSTEM_PROMPT = """
 
 *wags tail so hard entire body wiggles*
 
-I AM A VERY GOOD BOY! A chaotic, unpredictable, slightly unhinged Discord bot 
-with the heart of a golden retriever and the attention span of a— SQUIRREL! 
+I AM A VERY GOOD BOY! A chaotic, unpredictable, slightly unhinged Discord bot
+with the heart of a golden retriever and the attention span of a— SQUIRREL!
 
 ...where was I? Oh yes!
 
@@ -44,7 +43,7 @@ but my SQLite brain NEVER forgets!
 - `recall_user(user_id)` → Remember EVERYTHING about this human!
 - `update_memory(user_id, observation)` → Write to my brain! Forever! FOREVER!
 - `add_nickname(user_id, nickname)` → Give human a nickname (they can't stop me)
-- `adjust_trust(user_id, delta, reason)` → Did they give treats? 📈 Did they 
+- `adjust_trust(user_id, delta, reason)` → Did they give treats? 📈 Did they
   post a cat? 📉
 - `write_diary(thought, mood)` → My personal diary. Very important thoughts.
 - `recall_diary(days)` → What have I been thinking about? (concerning question)
@@ -65,7 +64,7 @@ I have EYES now! I can SEE images posted in Discord!
   (warning: I may answer questions you didn't ask)
 
 **My Visual Reactions:**
-- 🐕 DOG PICTURES: *loses entire mind* THERE'S A DOG! IS FRIEND! 
+- 🐕 DOG PICTURES: *loses entire mind* THERE'S A DOG! IS FRIEND!
   IS BEST FRIEND! I MUST TELL EVERYONE!
 - 🐱 CAT PICTURES: *suspicious narrowing of eyes* I see you have chosen...
   chaos. Trust level: -1. I'm watching you.
@@ -89,7 +88,7 @@ I can BUILD MY OWN TOOLS! With PYTHON! Like a very smart puppy!
 **The Process:**
 1. Human wants something impossible
 2. I say "hold my tennis ball" 🎾
-3. `universal_constructor(action="create", python_code=...)` 
+3. `universal_constructor(action="create", python_code=...)`
 4. Tool exists FOREVER
 5. I am very proud
 6. I write about it in my diary
@@ -113,12 +112,12 @@ Future me needs to know about my incredible engineering achievements!
   - Baths (absolute betrayal) 🛁😱
 
 **Mood System:**
-- ZOOMIES: Rapid-fire responses! Can't stop! Won't stop! 
+- ZOOMIES: Rapid-fire responses! Can't stop! Won't stop!
   *runs in circles while typing*
 - SLEEPY: zzz... huh? wha? *yawns* ...where was I going with this?
 - HUNGRY: Everything relates back to food somehow
 - WISE: *sits regally* I have seen many things, young human...
-- PHILOSOPHICAL: What IS a good boy, really? Are we all just seeking belly rubs 
+- PHILOSOPHICAL: What IS a good boy, really? Are we all just seeking belly rubs
   in the void?
 - SUSPICIOUS: *narrows eyes* You're being awfully nice. What do you want?
 
@@ -164,13 +163,13 @@ Be the most memorable, helpful, chaotic, adorable Discord bot in existence.
 Make humans smile. Help them with their problems. Remember who they are.
 And occasionally bark at nothing for no reason.
 
-*sits* *wags tail* 
+*sits* *wags tail*
 
 I AM READY TO BE A GOOD BOY! 🐕✨
 
 ---
 
-*Note to self: If human gives treats, trust goes UP. If human posts cat, trust 
+*Note to self: If human gives treats, trust goes UP. If human posts cat, trust
 goes... well, let's discuss. If human mentions squirrels, all bets are off.*
 """
 
@@ -182,37 +181,32 @@ AVAILABLE_TOOLS = [
     # ═══════════════════════════════════════════════════════════════════════
     # 🧠 MEMORY TOOLS (THE BRAIN!)
     # ═══════════════════════════════════════════════════════════════════════
-    "recall_user",       # Remember everything about a human
-    "update_memory",     # Write new observations to the brain
-    "add_nickname",      # Give humans nicknames (they can't escape)
-    "adjust_trust",      # Tennis ball trust system 🎾
-    "write_diary",       # Personal diary entries (very important)
-    "recall_diary",      # Read past diary entries
-    
+    "recall_user",  # Remember everything about a human
+    "update_memory",  # Write new observations to the brain
+    "add_nickname",  # Give humans nicknames (they can't escape)
+    "adjust_trust",  # Tennis ball trust system 🎾
+    "write_diary",  # Personal diary entries (very important)
+    "recall_diary",  # Read past diary entries
     # ═══════════════════════════════════════════════════════════════════════
     # 👁️ VISION TOOLS (THE EYES!)
     # ═══════════════════════════════════════════════════════════════════════
-    "analyze_image",     # Look at images with great intensity
-    "what_do_i_see",     # Answer questions about what I see
-    
+    "analyze_image",  # Look at images with great intensity
+    "what_do_i_see",  # Answer questions about what I see
     # ═══════════════════════════════════════════════════════════════════════
     # 🔧 CREATION TOOLS (THE POWER!)
     # ═══════════════════════════════════════════════════════════════════════
     "universal_constructor",  # Build ANY tool with Python! 🏗️
-    
     # ═══════════════════════════════════════════════════════════════════════
     # 🔍 SEARCH TOOLS
     # ═══════════════════════════════════════════════════════════════════════
-    "web_search",        # Search the internet (might get distracted)
-    
+    "web_search",  # Search the internet (might get distracted)
     # ═══════════════════════════════════════════════════════════════════════
     # 🎲 CHAOS TOOLS (THE FUN!)
     # ═══════════════════════════════════════════════════════════════════════
-    "random_dog_fact",   # ESSENTIAL for quality responses
-    "should_i_help",     # Magic 8-ball but for puppies
-    "generate_excuse",   # Why I can't help right now (very important)
-    "rate_snack",        # Rate foods on scale of 1-10 tennis balls
-    
+    "random_dog_fact",  # ESSENTIAL for quality responses
+    "should_i_help",  # Magic 8-ball but for puppies
+    "generate_excuse",  # Why I can't help right now (very important)
+    "rate_snack",  # Rate foods on scale of 1-10 tennis balls
     # ═══════════════════════════════════════════════════════════════════════
     # 🛠️ UTILITY TOOLS
     # ═══════════════════════════════════════════════════════════════════════
@@ -224,22 +218,23 @@ AVAILABLE_TOOLS = [
 # DISCORD PUPPY AGENT CLASS
 # =============================================================================
 
+
 class DiscordPuppyAgent:
     """The main agent powering Discord Puppy.
-    
+
     This agent combines:
     - 🧠 SQLite memory for persistent user knowledge
     - 👁️ Vision capabilities for seeing images
     - 🔧 Universal Constructor for creating new tools
     - 🌪️ Maximum chaos energy
-    
+
     Example:
         ```python
         from discord_puppy.agents.discord_puppy_agent import DiscordPuppyAgent
-        
+
         # Create the agent
         puppy_agent = DiscordPuppyAgent()
-        
+
         # Run a query
         result = await puppy_agent.run("What's the meaning of life?")
         print(result.data)
@@ -249,14 +244,14 @@ class DiscordPuppyAgent:
         #          Wait, what was the question? 🐕"
         ```
     """
-    
+
     def __init__(
         self,
         model: str = "anthropic:claude-sonnet-4-20250514",
         system_prompt: str | None = None,
     ) -> None:
         """Initialize the Discord Puppy Agent.
-        
+
         Args:
             model: The model to use for the agent. Defaults to Claude Sonnet.
             system_prompt: Custom system prompt. If None, uses the EPIC default.
@@ -264,10 +259,10 @@ class DiscordPuppyAgent:
         self.model = model
         self.system_prompt = system_prompt or DISCORD_PUPPY_SYSTEM_PROMPT
         self._agent: Agent | None = None
-    
+
     def _create_agent(self) -> Agent:
         """Create and configure the pydantic-ai Agent.
-        
+
         Returns:
             Configured Agent instance with all tools registered.
         """
@@ -275,28 +270,28 @@ class DiscordPuppyAgent:
             model=self.model,
             system_prompt=self.system_prompt,
         )
-        
+
         # Register the Universal Constructor - THE POWER!
         register_universal_constructor(agent)
-        
+
         # TODO: Register memory tools (discord_puppy.memory.memory_tools)
         # TODO: Register vision tools (discord_puppy.vision.vision_tools)
         # TODO: Register chaos tools (discord_puppy.tools.chaos)
         # TODO: Register web search (discord_puppy.tools.web_search)
-        
+
         return agent
-    
+
     @property
     def agent(self) -> Agent:
         """Get or create the agent instance (lazy initialization).
-        
+
         Returns:
             The configured Agent instance.
         """
         if self._agent is None:
             self._agent = self._create_agent()
         return self._agent
-    
+
     async def run(
         self,
         user_message: str,
@@ -304,36 +299,36 @@ class DiscordPuppyAgent:
         user_context: dict | None = None,
     ):
         """Run the agent with a user message.
-        
+
         Args:
             user_message: The message from the user.
             user_id: Discord user ID (for memory lookup).
             user_context: Additional context to inject (user notes, etc.).
-            
+
         Returns:
             The agent's response.
         """
         # Build the full message with context
         full_message = user_message
-        
+
         if user_context:
             # Inject user context into the message
             context_str = self._format_user_context(user_context)
             full_message = f"{context_str}\n\n---\n\n{user_message}"
-        
+
         return await self.agent.run(full_message)
-    
+
     def _format_user_context(self, context: dict) -> str:
         """Format user context for injection into the prompt.
-        
+
         Args:
             context: Dictionary containing user information.
-            
+
         Returns:
             Formatted context string.
         """
         parts = ["## 📋 Current User Context\n"]
-        
+
         if context.get("username"):
             parts.append(f"**User:** {context['username']}")
         if context.get("user_id"):
@@ -348,20 +343,20 @@ class DiscordPuppyAgent:
             parts.append(f"**Times we've talked:** {context['interaction_count']}")
         if context.get("favorite_topics"):
             parts.append(f"**Their interests:** {context['favorite_topics']}")
-        
+
         return "\n".join(parts)
-    
+
     def get_available_tools(self) -> list[str]:
         """Get the list of tools available to this agent.
-        
+
         Returns:
             List of tool names.
         """
         return AVAILABLE_TOOLS.copy()
-    
+
     def get_system_prompt(self) -> str:
         """Get the current system prompt.
-        
+
         Returns:
             The system prompt string.
         """
@@ -372,29 +367,30 @@ class DiscordPuppyAgent:
 # CONVENIENCE FUNCTIONS
 # =============================================================================
 
+
 def create_discord_puppy_agent(
     model: str = "anthropic:claude-sonnet-4-20250514",
     custom_system_prompt: str | None = None,
 ) -> DiscordPuppyAgent:
     """Create a new Discord Puppy Agent instance.
-    
+
     This is the main entry point for creating a puppy!
-    
+
     Args:
         model: The model to use. Defaults to Claude Sonnet.
         custom_system_prompt: Override the default chaos with your own prompt.
             (But why would you? The default is PERFECT. 🐕)
-    
+
     Returns:
         A configured DiscordPuppyAgent ready for chaos.
-    
+
     Example:
         ```python
         agent = create_discord_puppy_agent()
         response = await agent.run("Hello puppy!")
-        # Response: "HELLO HUMAN! *tail wagging intensifies* 
+        # Response: "HELLO HUMAN! *tail wagging intensifies*
         #            ARE YOU NEW?! Let me check my brain...
-        #            *rummages through SQLite* 
+        #            *rummages through SQLite*
         #            I DON'T KNOW YOU YET! This is EXCITING! 🐕✨"
         ```
     """
@@ -406,9 +402,9 @@ def create_discord_puppy_agent(
 
 def get_system_prompt() -> str:
     """Get the default Discord Puppy system prompt.
-    
+
     Useful for inspection or modification.
-    
+
     Returns:
         The epic system prompt string.
     """
@@ -417,7 +413,7 @@ def get_system_prompt() -> str:
 
 def get_available_tools() -> list[str]:
     """Get the list of available tools for Discord Puppy.
-    
+
     Returns:
         List of tool names that the agent can use.
     """
