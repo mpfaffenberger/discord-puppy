@@ -54,10 +54,10 @@ class TestMemoryToolsExport:
 
     def test_all_tools_are_async(self):
         """All memory tools should be async functions."""
-        import asyncio
+        import inspect
 
         for tool in MEMORY_TOOLS:
-            assert asyncio.iscoroutinefunction(tool)
+            assert inspect.iscoroutinefunction(tool)
 
 
 class TestRecallUser:
