@@ -14,6 +14,15 @@ from discord_puppy.memory.database import (
     parse_json_field,
     serialize_json_field,
 )
+from discord_puppy.memory.memory_tools import (
+    MEMORY_TOOLS,
+    add_nickname,
+    adjust_trust,
+    recall_diary,
+    recall_user,
+    update_memory,
+    write_diary,
+)
 from discord_puppy.memory.user_notes import (
     InteractionMemory,
     UserNotes,
@@ -40,4 +49,12 @@ __all__ = [
     "record_interaction",
     "get_recent_interactions",
     "get_user_summary",
+    # Memory tools (LLM-callable)
+    "MEMORY_TOOLS",
+    "recall_user",
+    "update_memory",
+    "add_nickname",
+    "adjust_trust",
+    "write_diary",
+    "recall_diary",
 ]
