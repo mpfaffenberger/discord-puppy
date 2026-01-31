@@ -3,11 +3,9 @@
 Tests for mood system, response decisions, and spontaneous outbursts.
 """
 
-import pytest
-
 from discord_puppy.personality import (
-    Mood,
     MOOD_WEIGHTS,
+    Mood,
     get_mood_modifier,
     get_random_mood,
     random_outburst,
@@ -22,8 +20,13 @@ class TestMoodSystem:
     def test_mood_enum_has_expected_values(self):
         """Verify all expected moods exist."""
         expected_moods = [
-            "zoomies", "sleepy", "hungry", "wise",
-            "philosophical", "suspicious", "excited",
+            "zoomies",
+            "sleepy",
+            "hungry",
+            "wise",
+            "philosophical",
+            "suspicious",
+            "excited",
         ]
         actual_moods = [m.value for m in Mood]
         assert sorted(actual_moods) == sorted(expected_moods)
@@ -56,7 +59,7 @@ class TestMoodSystem:
         # Zoomies should mention ZOOMIES
         modifier = get_mood_modifier(Mood.ZOOMIES)
         assert "ZOOMIES" in modifier
-        
+
         # Sleepy should mention SLEEPY
         modifier = get_mood_modifier(Mood.SLEEPY)
         assert "SLEEPY" in modifier
@@ -187,7 +190,7 @@ class TestRandomOutburst:
         """With users, outbursts might reference them."""
         users = ["TestUser", "AnotherUser"]
         trust_levels = {"TestUser": 7, "AnotherUser": 3}
-        
+
         for _ in range(50):  # Run many times for coverage
             outburst = random_outburst(
                 usernames=users,
@@ -222,6 +225,7 @@ class TestExports:
     def test_mood_enum_exported(self):
         """Mood should be importable."""
         from discord_puppy.personality import Mood
+
         assert Mood is not None
 
     def test_all_functions_exported(self):
@@ -233,6 +237,7 @@ class TestExports:
             should_react_with_emoji,
             should_respond,
         )
+
         assert callable(get_mood_modifier)
         assert callable(get_random_mood)
         assert callable(random_outburst)

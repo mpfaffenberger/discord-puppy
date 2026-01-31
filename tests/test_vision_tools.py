@@ -6,7 +6,7 @@ No squirrels were harmed in the making of these tests. 🐿️
 """
 
 from io import BytesIO
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 import httpx
 import pytest
@@ -19,7 +19,6 @@ from discord_puppy.vision.vision_tools import (
     analyze_image,
     what_do_i_see,
 )
-
 
 # =============================================================================
 # Test Fixtures
@@ -58,7 +57,7 @@ def mock_binary_content(sample_jpeg_bytes):
 def test_vision_tools_contains_all_functions():
     """VISION_TOOLS export contains all 3 vision functions."""
     assert len(VISION_TOOLS) == 3
-    
+
     tool_names = [t.__name__ for t in VISION_TOOLS]
     assert "analyze_image" in tool_names
     assert "analyze_attachment" in tool_names
@@ -79,9 +78,7 @@ def test_vision_tools_are_callable():
 @pytest.mark.asyncio
 async def test_analyze_image_happy_path(sample_png_bytes, mock_binary_content):
     """analyze_image returns ToolReturn with BinaryContent on success."""
-    with patch(
-        "discord_puppy.vision.vision_tools.process_discord_image"
-    ) as mock_process:
+    with patch("discord_puppy.vision.vision_tools.process_discord_image") as mock_process:
         mock_process.return_value = mock_binary_content
 
         result = await analyze_image("https://cdn.discordapp.com/test.png")
@@ -105,9 +102,7 @@ async def test_analyze_image_happy_path(sample_png_bytes, mock_binary_content):
 @pytest.mark.asyncio
 async def test_analyze_image_network_error():
     """analyze_image returns error message on network failure."""
-    with patch(
-        "discord_puppy.vision.vision_tools.process_discord_image"
-    ) as mock_process:
+    with patch("discord_puppy.vision.vision_tools.process_discord_image") as mock_process:
         mock_process.side_effect = httpx.RequestError("Connection failed")
 
         result = await analyze_image("https://cdn.discordapp.com/broken.png")
@@ -126,9 +121,7 @@ async def test_analyze_image_network_error():
 @pytest.mark.asyncio
 async def test_analyze_image_timeout_error():
     """analyze_image handles timeout gracefully."""
-    with patch(
-        "discord_puppy.vision.vision_tools.process_discord_image"
-    ) as mock_process:
+    with patch("discord_puppy.vision.vision_tools.process_discord_image") as mock_process:
         mock_process.side_effect = httpx.TimeoutException("Request timed out")
 
         result = await analyze_image("https://cdn.discordapp.com/slow.png")
@@ -209,14 +202,11 @@ async def test_analyze_attachment_empty_bytes():
 @pytest.mark.asyncio
 async def test_what_do_i_see_happy_path(mock_binary_content):
     """what_do_i_see returns question + BinaryContent on success."""
-    with patch(
-        "discord_puppy.vision.vision_tools.process_discord_image"
-    ) as mock_process:
+    with patch("discord_puppy.vision.vision_tools.process_discord_image") as mock_process:
         mock_process.return_value = mock_binary_content
 
         result = await what_do_i_see(
-            "https://cdn.discordapp.com/meme.png",
-            "Is there a squirrel in this image?"
+            "https://cdn.discordapp.com/meme.png", "Is there a squirrel in this image?"
         )
 
         # Should return a list (ToolReturn)
@@ -236,9 +226,7 @@ async def test_what_do_i_see_happy_path(mock_binary_content):
 @pytest.mark.asyncio
 async def test_what_do_i_see_includes_question_in_response(mock_binary_content):
     """what_do_i_see properly includes the user's question."""
-    with patch(
-        "discord_puppy.vision.vision_tools.process_discord_image"
-    ) as mock_process:
+    with patch("discord_puppy.vision.vision_tools.process_discord_image") as mock_process:
         mock_process.return_value = mock_binary_content
 
         question = "How many dogs are in this picture?"
@@ -251,16 +239,11 @@ async def test_what_do_i_see_includes_question_in_response(mock_binary_content):
 @pytest.mark.asyncio
 async def test_what_do_i_see_network_error():
     """what_do_i_see returns error with question context on failure."""
-    with patch(
-        "discord_puppy.vision.vision_tools.process_discord_image"
-    ) as mock_process:
+    with patch("discord_puppy.vision.vision_tools.process_discord_image") as mock_process:
         mock_process.side_effect = httpx.RequestError("Network down")
 
         question = "What breed is this dog?"
-        result = await what_do_i_see(
-            "https://cdn.discordapp.com/unreachable.png",
-            question
-        )
+        result = await what_do_i_see("https://cdn.discordapp.com/unreachable.png", question)
 
         # Should return error list
         assert isinstance(result, list)
@@ -276,18 +259,13 @@ async def test_what_do_i_see_network_error():
 @pytest.mark.asyncio
 async def test_what_do_i_see_bad_url():
     """what_do_i_see handles invalid URLs gracefully."""
-    with patch(
-        "discord_puppy.vision.vision_tools.process_discord_image"
-    ) as mock_process:
+    with patch("discord_puppy.vision.vision_tools.process_discord_image") as mock_process:
         mock_process.side_effect = httpx.HTTPStatusError(
-            "404 Not Found",
-            request=MagicMock(),
-            response=MagicMock(status_code=404)
+            "404 Not Found", request=MagicMock(), response=MagicMock(status_code=404)
         )
 
         result = await what_do_i_see(
-            "https://cdn.discordapp.com/deleted.png",
-            "What's in this image?"
+            "https://cdn.discordapp.com/deleted.png", "What's in this image?"
         )
 
         assert isinstance(result, list)

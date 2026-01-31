@@ -16,10 +16,9 @@ __version__ = "0.1.0"
 __author__ = "The Pack"
 
 # Core exports
-from discord_puppy.config import Settings, clear_settings_cache, get_settings
-
 # Bot exports - the main event!
 from discord_puppy.bot import DiscordPuppy, create_puppy, run_puppy
+from discord_puppy.config import Settings, clear_settings_cache, get_settings
 
 # Personality exports
 from discord_puppy.personality import (

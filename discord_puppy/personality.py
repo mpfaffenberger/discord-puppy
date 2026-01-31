@@ -13,7 +13,7 @@ from enum import Enum
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from discord_puppy.memory.user_notes import UserNotes
+    pass
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 class Mood(Enum):
     """The puppy's current emotional state.
-    
+
     Each mood affects how the puppy responds:
     - ZOOMIES: Rapid-fire, excitable, references lots of memories
     - SLEEPY: Drowsy, might forget things, responds slower
@@ -35,10 +35,11 @@ class Mood(Enum):
     - SUSPICIOUS: Questioning motives, checking trust levels
     - EXCITED: Normal but happy!! Very bouncy!
     """
+
     ZOOMIES = "zoomies"  # *runs in circles*
-    SLEEPY = "sleepy"    # zzz... huh?
-    HUNGRY = "hungry"    # is that food?
-    WISE = "wise"        # *strokes imaginary beard*
+    SLEEPY = "sleepy"  # zzz... huh?
+    HUNGRY = "hungry"  # is that food?
+    WISE = "wise"  # *strokes imaginary beard*
     PHILOSOPHICAL = "philosophical"  # what IS a good boy?
     SUSPICIOUS = "suspicious"  # *narrows eyes*
     EXCITED = "excited"  # DEFAULT PUPPY STATE!
@@ -46,19 +47,19 @@ class Mood(Enum):
 
 # Weighted mood distribution (some moods are rarer!)
 MOOD_WEIGHTS = {
-    Mood.EXCITED: 40,      # Most common - default happy puppy!
-    Mood.ZOOMIES: 15,      # Chaotic energy!
-    Mood.HUNGRY: 15,       # Treat-focused
-    Mood.SLEEPY: 10,       # Drowsy pupper
-    Mood.WISE: 10,         # Sage mode
-    Mood.SUSPICIOUS: 7,    # Trust issues
-    Mood.PHILOSOPHICAL: 3, # Deep thoughts (rare!)
+    Mood.EXCITED: 40,  # Most common - default happy puppy!
+    Mood.ZOOMIES: 15,  # Chaotic energy!
+    Mood.HUNGRY: 15,  # Treat-focused
+    Mood.SLEEPY: 10,  # Drowsy pupper
+    Mood.WISE: 10,  # Sage mode
+    Mood.SUSPICIOUS: 7,  # Trust issues
+    Mood.PHILOSOPHICAL: 3,  # Deep thoughts (rare!)
 }
 
 
 def get_random_mood() -> Mood:
     """Get a random mood based on weighted distribution.
-    
+
     Returns:
         A Mood enum value weighted by rarity.
     """
@@ -134,22 +135,22 @@ def random_outburst(
     day_count: int = 42,
 ) -> str:
     """Generate a random spontaneous outburst.
-    
+
     Args:
         usernames: Optional list of known usernames to potentially reference.
         trust_levels: Optional dict mapping usernames to trust levels.
         day_count: Current diary day number (for continuity).
-    
+
     Returns:
         A chaotic outburst string ready to send.
     """
     # 60% generic, 25% user reference, 15% diary
     roll = random.random()
-    
+
     if roll < 0.60 or not usernames:
         # Generic outburst
         return random.choice(GENERIC_OUTBURSTS)
-    
+
     elif roll < 0.85 and usernames:
         # User reference outburst
         username = random.choice(usernames)
@@ -159,7 +160,7 @@ def random_outburst(
             username=username,
             trust_level=trust_level,
         )
-    
+
     else:
         # Diary outburst
         outburst = random.choice(DIARY_OUTBURSTS)
@@ -179,42 +180,55 @@ def should_respond(
     user_trust_level: int = 5,
 ) -> tuple[bool, str]:
     """Decide whether the puppy should respond to a message.
-    
+
     Args:
         message_content: The content of the message.
         is_mentioned: Whether the bot was directly mentioned.
         is_dm: Whether this is a DM (always respond to DMs!).
         response_chance: Base probability of responding (0.0-1.0).
         user_trust_level: The user's trust level (1-10), affects response chance.
-    
+
     Returns:
         Tuple of (should_respond: bool, reason: str for logging).
     """
     # Always respond to DMs - someone specifically reached out!
     if is_dm:
         return True, "DM received - always respond to direct messages!"
-    
+
     # Always respond when mentioned - someone called for me!
     if is_mentioned:
         return True, "I was mentioned! *perks up ears* Someone wants ME!"
-    
+
     # Check for trigger words that ALWAYS get a response
     trigger_words = [
-        "puppy", "dog", "pup", "good boy", "good girl", "treat",
-        "squirrel", "ball", "fetch", "bark", "woof", "bork",
-        "walkies", "walk", "belly rub", "pet",
+        "puppy",
+        "dog",
+        "pup",
+        "good boy",
+        "good girl",
+        "treat",
+        "squirrel",
+        "ball",
+        "fetch",
+        "bark",
+        "woof",
+        "bork",
+        "walkies",
+        "walk",
+        "belly rub",
+        "pet",
     ]
     message_lower = message_content.lower()
     for trigger in trigger_words:
         if trigger in message_lower:
             logger.debug(f"Trigger word detected: {trigger}")
             return True, f"Heard '{trigger}'! Cannot resist responding! 🐕"
-    
+
     # Adjust response chance based on trust level
     # Higher trust = more likely to respond (they're a friend!)
     trust_modifier = (user_trust_level - 5) * 0.05  # -0.2 to +0.25
     adjusted_chance = min(1.0, max(0.1, response_chance + trust_modifier))
-    
+
     # Roll the dice!
     if random.random() < adjusted_chance:
         reasons = [
@@ -226,7 +240,7 @@ def should_respond(
             "My bork sense is tingling!",
         ]
         return True, random.choice(reasons)
-    
+
     # Decided not to respond
     reasons = [
         "*pretends not to hear*",
@@ -240,17 +254,29 @@ def should_respond(
 
 def should_react_with_emoji() -> tuple[bool, str | None]:
     """Decide if puppy should react with an emoji instead of responding.
-    
+
     Called when puppy decides NOT to respond - 5% chance to react anyway!
-    
+
     Returns:
         Tuple of (should_react: bool, emoji: str | None).
     """
     if random.random() < 0.05:  # 5% chance
         emojis = [
-            "🐕", "🐶", "🦴", "🎾", "🐾", 
-            "👀", "✨", "💕", "🤔", "👁️",
-            "😂", "🔥", "👍", "❤️", "🙃",
+            "🐕",
+            "🐶",
+            "🦴",
+            "🎾",
+            "🐾",
+            "👀",
+            "✨",
+            "💕",
+            "🤔",
+            "👁️",
+            "😂",
+            "🔥",
+            "👍",
+            "❤️",
+            "🙃",
         ]
         return True, random.choice(emojis)
     return False, None
@@ -263,10 +289,10 @@ def should_react_with_emoji() -> tuple[bool, str | None]:
 
 def get_mood_modifier(mood: Mood) -> str:
     """Get a prompt modifier based on current mood.
-    
+
     Args:
         mood: The current Mood.
-    
+
     Returns:
         A string to inject into the response context.
     """

@@ -89,9 +89,7 @@ class UserNotes(BaseModel):
     """Topics this human likes to discuss."""
 
 
-async def get_user_notes(
-    user_id: str, db_path: Optional[Path] = None
-) -> UserNotes | None:
+async def get_user_notes(user_id: str, db_path: Optional[Path] = None) -> UserNotes | None:
     """Get all notes about a user.
 
     Retrieves the complete memory profile for a user from the database.
@@ -143,9 +141,7 @@ async def get_user_notes(
         await conn.close()
 
 
-async def update_user_notes(
-    user_id: str, new_notes: str, db_path: Optional[Path] = None
-) -> bool:
+async def update_user_notes(user_id: str, new_notes: str, db_path: Optional[Path] = None) -> bool:
     """Append or update notes about a user.
 
     Adds new information to existing notes (appends with newline separator).
@@ -171,9 +167,7 @@ async def update_user_notes(
         await ensure_user_exists(conn, user_id)
 
         # Get existing notes to append to
-        cursor = await conn.execute(
-            "SELECT notes FROM user_notes WHERE user_id = ?", (user_id,)
-        )
+        cursor = await conn.execute("SELECT notes FROM user_notes WHERE user_id = ?", (user_id,))
         row = await cursor.fetchone()
         existing_notes = row["notes"] if row and row["notes"] else ""
 
@@ -361,7 +355,9 @@ async def get_user_summary(user_id: str, db_path: Optional[Path] = None) -> str:
         parts.append("Recent interactions:")
         parts.extend(interaction_summaries)
 
-    return ". ".join(parts[:3]) + "\n" + "\n".join(parts[3:]) if len(parts) > 3 else ". ".join(parts)
+    return (
+        ". ".join(parts[:3]) + "\n" + "\n".join(parts[3:]) if len(parts) > 3 else ". ".join(parts)
+    )
 
 
 def _parse_timestamp(value: str | None) -> datetime | None:
